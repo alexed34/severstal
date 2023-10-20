@@ -1,5 +1,5 @@
 --Postgresql
-
+CREATE SCHEMA severstal AUTHORIZATION postgres;
 
 CREATE TABLE client (
 	client_id serial4 NOT NULL,
@@ -62,10 +62,7 @@ CREATE TABLE product (
 
 -- Table Triggers
 
-create trigger order_update_total_amount_trigger after
-update
-    on
-    severstal.product for each row execute function severstal.order_update_total_amount_trigger_function();
+
 
 
 -- severstal.shipment definition
@@ -120,16 +117,7 @@ CREATE TABLE orders (
 	CONSTRAINT orders_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES manager(manager_id) ON DELETE CASCADE
 );
 
--- Table Triggers
 
-create trigger order_update_trigger after
-update
-    on
-    severstal.orders for each row execute function severstal.order_update_trigger_function();
-create trigger order_delete_trigger before
-delete
-    on
-    severstal.orders for each row execute function severstal.order_delete_trigger_function();
 
 
 -- severstal.ordershipment definition
@@ -181,10 +169,7 @@ CREATE TABLE orderproduct (
 
 -- Table Triggers
 
-create trigger order_update_total_amount_trigger after
-update
-    on
-    severstal.orderproduct for each row execute function severstal.order_update_total_amount_trigger_function();
+
 
 
 
@@ -193,7 +178,7 @@ CREATE OR REPLACE FUNCTION severstal.order_delete_trigger_function()
  LANGUAGE plpgsql
 AS $function$
 BEGIN
-    INSERT INTO severstal.OrderAudit (order_id, attribute_name, old_value, new_value, change_timestamp, manager_id)
+    INSERT INTO OrderAudit (order_id, attribute_name, old_value, new_value, change_timestamp, manager_id)
     VALUES (OLD.order_id, 'DELETED', 'N/A', 'N/A', NOW(), pg_catalog."current_user"());
 
     RETURN OLD;
@@ -249,6 +234,29 @@ END;
 $function$
 ;
 
+
+create trigger order_update_total_amount_trigger after
+update
+    on
+    severstal.product for each row execute function severstal.order_update_total_amount_trigger_function();
+   
+create trigger order_update_total_amount_trigger after
+update
+    on
+    severstal.orderproduct for each row execute function severstal.order_update_total_amount_trigger_function();
+   
+   
+   
+-- Table Triggers
+
+create trigger order_update_trigger after
+update
+    on
+    severstal.orders for each row execute function severstal.order_update_trigger_function();
+create trigger order_delete_trigger before
+delete
+    on
+    severstal.orders for each row execute function severstal.order_delete_trigger_function();
 
 -- Таблица "Клиенты" (client)
 INSERT INTO client ("name", contact_person, email, phone, address)
