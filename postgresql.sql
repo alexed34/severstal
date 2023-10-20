@@ -193,7 +193,7 @@ CREATE OR REPLACE FUNCTION severstal.order_delete_trigger_function()
  LANGUAGE plpgsql
 AS $function$
 BEGIN
-    INSERT INTO OrderAudit (order_id, attribute_name, old_value, new_value, change_timestamp, manager_id)
+    INSERT INTO severstal.OrderAudit (order_id, attribute_name, old_value, new_value, change_timestamp, manager_id)
     VALUES (OLD.order_id, 'DELETED', 'N/A', 'N/A', NOW(), pg_catalog."current_user"());
 
     RETURN OLD;
